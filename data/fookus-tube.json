@@ -1,0 +1,21 @@
+[
+  {
+    "id": "fookus-tube",
+    "name": "Fookus-tube",
+    "description": "a fookus tube for surfing youtube without any distractions, trackers, login and offline viewing support.",
+    "icon": "",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/Hotaro26/Fookus-tube/releases/download/v1.5/app-release.apk",
+    "repoUrl": "https://github.com/Hotaro26/Fookus-tube",
+    "githubRepo": "Hotaro26/Fookus-tube",
+    "releaseKeyword": "apk",
+    "packageName": "com.hotaro.fookus-tube",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "4.70 MB",
+    "author": "Hotaro26",
+    "officialSite": "https://github.com/Hotaro26/Fookus-tube",
+    "screenshots": []
+  }
+]

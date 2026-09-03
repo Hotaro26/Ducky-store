@@ -1,0 +1,21 @@
+[
+  {
+    "id": "mascot",
+    "name": "Mascot",
+    "description": "a  <4 mb, material 3 expressive ,  Alarm focused clock app which would definitely get you out of yer bed!",
+    "icon": "",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/Hotaro26/Mascot/releases/download/v1.5/app-release.apk",
+    "repoUrl": "https://github.com/Hotaro26/Mascot",
+    "githubRepo": "Hotaro26/Mascot",
+    "releaseKeyword": "apk",
+    "packageName": "com.hotaro.mascot",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "3.01 MB",
+    "author": "Hotaro26",
+    "officialSite": "https://github.com/Hotaro26/Mascot",
+    "screenshots": []
+  }
+]

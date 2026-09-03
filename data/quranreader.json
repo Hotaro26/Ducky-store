@@ -1,0 +1,21 @@
+[
+  {
+    "id": "quranreader",
+    "name": "QuranReader",
+    "description": "a calming Quran reading app with material 3 ui design",
+    "icon": "",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/Hotaro26/QuranReader/releases/download/v1.3%28animation%29/app-release.apk",
+    "repoUrl": "https://github.com/Hotaro26/QuranReader",
+    "githubRepo": "Hotaro26/QuranReader",
+    "releaseKeyword": "apk",
+    "packageName": "com.hotaro.quranreader",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "15.09 MB",
+    "author": "Hotaro26",
+    "officialSite": "https://github.com/Hotaro26/QuranReader",
+    "screenshots": []
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "miko",
+    "name": "miko",
+    "description": "A manga reader app built purely with kotlin and jetpack compose, features latest material 3 expressive  ui and online catalogue manga library",
+    "icon": "",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/Hotaro26/miko/releases/download/v3.3/miko-v3.3.apk",
+    "repoUrl": "https://github.com/Hotaro26/miko",
+    "githubRepo": "Hotaro26/miko",
+    "releaseKeyword": "apk",
+    "packageName": "com.hotaro.miko",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "10.43 MB",
+    "author": "Hotaro26",
+    "officialSite": "https://github.com/Hotaro26/miko",
+    "screenshots": []
+  }
+]

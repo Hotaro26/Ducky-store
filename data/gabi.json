@@ -1,0 +1,21 @@
+[
+  {
+    "id": "gabi",
+    "name": "gabi",
+    "description": "All in one media/image downloader app for android based on yt-dlp, gallery-dl python library and newpipe extractor along with cobalt api instance, following material 3 expressive  ui ",
+    "icon": "",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/Hotaro26/gabi/releases/download/v4.6.1/app-release.apk",
+    "repoUrl": "https://github.com/Hotaro26/gabi",
+    "githubRepo": "Hotaro26/gabi",
+    "releaseKeyword": "apk",
+    "packageName": "com.hotaro.gabi",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "48.42 MB",
+    "author": "Hotaro26",
+    "officialSite": "https://github.com/Hotaro26/gabi",
+    "screenshots": []
+  }
+]
