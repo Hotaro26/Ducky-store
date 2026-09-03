@@ -13,12 +13,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -77,7 +79,7 @@ fun MainScreen(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
                                 placeholder = { Text("Search apps...") },
-                                leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                                leadingIcon = { Icon(Icons.Default.Android, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(56.dp),
@@ -171,29 +173,54 @@ fun MainScreen(
 fun AppItem(asset: GithubAsset, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            val readableName = asset.name
-                .replace(".apk", "")
-                .split("-universal")[0]
-                .replaceFirstChar { it.uppercase() }
-                .replace("_", " ")
-                
-            Text(
-                text = readableName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            val sizeMb = "%.2f".format(asset.size / (1024.0 * 1024.0))
-            Text(
-                text = "Size: $sizeMb MB",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        val readableName = asset.name
+            .replace(".apk", "")
+            .split("-universal")[0]
+            .replaceFirstChar { it.uppercase() }
+            .replace("_", " ")
+            
+        val firstLetter = readableName.firstOrNull()?.toString()?.uppercase() ?: "A"
+
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = firstLetter,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column {
+                Text(
+                    text = readableName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                val sizeMb = "%.2f".format(asset.size / (1024.0 * 1024.0))
+                Text(
+                    text = "Size: $sizeMb MB",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
