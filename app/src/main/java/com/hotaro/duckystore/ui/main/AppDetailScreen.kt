@@ -238,7 +238,7 @@ fun AppDetailScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Hotaro26",
+                            text = metadata?.author?.takeIf { it.isNotBlank() } ?: "Hotaro26",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold
@@ -249,6 +249,28 @@ fun AppDetailScreen(
                             contentDescription = "Verified",
                             tint = Color(0xFF4CAF50),
                             modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+            
+            if (metadata?.description?.isNotEmpty() == true) {
+                Text(
+                    text = metadata!!.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            
+            if (metadata?.screenshots?.isNotEmpty() == true) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    items(metadata!!.screenshots) { screenshot ->
+                        AsyncImage(
+                            model = screenshot,
+                            contentDescription = "Screenshot",
+                            modifier = Modifier.height(300.dp).clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Fit
                         )
                     }
                 }
@@ -313,24 +335,7 @@ fun AppDetailScreen(
                 }
             }
             
-            // Previews
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Preview", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    repeat(3) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .aspectRatio(0.45f)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                        )
-                    }
-                }
-            }
+
             
             // Bottom padding for the FAB
             Spacer(modifier = Modifier.height(80.dp))
