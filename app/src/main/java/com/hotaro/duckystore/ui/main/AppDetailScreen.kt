@@ -53,6 +53,7 @@ fun AppDetailScreen(
     var progress by remember { mutableStateOf<Float?>(null) }
     var downloadStatus by remember { mutableStateOf("Download") }
     var showVariantsSheet by remember { mutableStateOf(false) }
+    var showModInfoSheet by remember { mutableStateOf(false) }
     var selectedVariant by remember { mutableStateOf(detail.variants.firstOrNull()) }
     var metadata by remember { mutableStateOf<AppMetadata?>(null) }
     
@@ -271,9 +272,22 @@ fun AppDetailScreen(
                     shape = RoundedCornerShape(8.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                 ) {
-                    Text("PRODUCTIVITY", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text((metadata?.category ?: "UTILITY").uppercase(), modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-
+                
+                if (metadata?.modInfo?.isNotEmpty() == true) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        onClick = { showModInfoSheet = true }
+                    ) {
+                        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Spacer(Modifier.width(4.dp))
+                            Text("MOD INFO", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                }
             }
             
             // Info Card

@@ -42,7 +42,8 @@ data class AppMetadata(
     val packageName: String = "",
     val version: String = "",
     val latestVersion: String = "",
-    val screenshots: List<String> = emptyList()
+    val screenshots: List<String> = emptyList(),
+    val modInfo: List<String> = emptyList()
 )
 
 @Serializable
