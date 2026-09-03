@@ -143,7 +143,7 @@ fun SegmentCard(
     content: @Composable () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = Modifier.fillMaxWidth().clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { onClick() },
         shape = RoundedCornerShape(
             topStart = defaultTopStart,
             topEnd = defaultTopEnd,

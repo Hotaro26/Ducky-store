@@ -33,7 +33,10 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     val uiState: StateFlow<MainScreenUiState> = _uiState
 
     private val _isRateLimited = MutableStateFlow(false)
-    val isRateLimited: StateFlow<Boolean> = _isRateLimited.asStateFlow()
+    val isRateLimited: StateFlow<Boolean> = _isRateLimited
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     init {
         loadApps()
@@ -41,6 +44,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     fun loadApps() {
         viewModelScope.launch {
+            _isRefreshing.value = true
             val prefs = getApplication<Application>().getSharedPreferences("ducky_metadata_cache", Context.MODE_PRIVATE)
             val jsonParser = Json { ignoreUnknownKeys = true }
             
@@ -78,6 +82,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 if (fullCacheJson == null) {
                     _uiState.value = MainScreenUiState.Error(Exception("No apps found or GitHub rate limit exceeded. Please try again later."))
                 }
+                _isRefreshing.value = false
                 return@launch
             } else {
                 _isRateLimited.value = false

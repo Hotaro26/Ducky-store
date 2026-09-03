@@ -70,6 +70,7 @@ fun MainScreen(
     viewModel: MainScreenViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     var sortMode by remember { mutableStateOf(SortMode.RECOMMENDED) }
     var showSortSheet by remember { mutableStateOf(false) }
     var showRateLimitSheet by remember { mutableStateOf(false) }
@@ -122,8 +123,6 @@ fun MainScreen(
             }
         ) { padding ->
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                val isRefreshing = state is MainScreenUiState.Loading
-
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
                     onRefresh = { viewModel.loadApps() },
@@ -213,8 +212,7 @@ fun MainScreen(
                                                         Card(
                                                             shape = RoundedCornerShape(32.dp),
                                                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
-                                                            onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) },
-                                                            modifier = Modifier.fillMaxSize().maskClip(RoundedCornerShape(32.dp))
+                                                            modifier = Modifier.fillMaxSize().maskClip(RoundedCornerShape(32.dp)).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) }
                                                         ) {
                                                             Box(
                                                                 modifier = Modifier.fillMaxSize(),
@@ -376,7 +374,7 @@ fun AppItem(group: AppGroup, onClick: () -> Unit) {
     val hasUpdate = isInstalled && installedVersion != null && remoteVersion != null && installedVersion != remoteVersion
 
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = Modifier.fillMaxWidth().clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
