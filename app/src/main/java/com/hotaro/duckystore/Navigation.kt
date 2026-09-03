@@ -63,8 +63,8 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
                     (initialKey.contains("key=Settings,") && targetKey.contains("key=Main,"))
                     
                 if (isBetweenHomeAndSettings) {
-                    scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
-                    scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
+                    scaleIn(initialScale = 0.92f, animationSpec = androidx.compose.animation.core.tween(300)) + fadeIn(androidx.compose.animation.core.tween(300)) togetherWith 
+                    scaleOut(targetScale = 0.92f, animationSpec = androidx.compose.animation.core.tween(300)) + fadeOut(androidx.compose.animation.core.tween(300))
                 } else {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,
@@ -83,8 +83,8 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
                     (initialKey.contains("key=Settings,") && targetKey.contains("key=Main,"))
                     
                 if (isBetweenHomeAndSettings) {
-                    scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
-                    scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
+                    scaleIn(initialScale = 0.92f, animationSpec = androidx.compose.animation.core.tween(300)) + fadeIn(androidx.compose.animation.core.tween(300)) togetherWith 
+                    scaleOut(targetScale = 0.92f, animationSpec = androidx.compose.animation.core.tween(300)) + fadeOut(androidx.compose.animation.core.tween(300))
                 } else {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Right,
