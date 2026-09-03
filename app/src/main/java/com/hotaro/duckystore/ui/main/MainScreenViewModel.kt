@@ -2,16 +2,21 @@ package com.hotaro.duckystore.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hotaro.duckystore.data.AppMetadata
 import com.hotaro.duckystore.data.AppRepository
 import com.hotaro.duckystore.data.GithubAsset
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class AppGroup(
+    val originalId: String,
     val baseName: String,
-    val variants: List<GithubAsset>
+    val variants: List<GithubAsset>,
+    val metadata: AppMetadata? = null
 )
 
 class MainScreenViewModel : ViewModel() {
@@ -29,19 +34,32 @@ class MainScreenViewModel : ViewModel() {
             _uiState.value = MainScreenUiState.Loading
             repository.getApps()
                 .onSuccess { apps ->
-                    val groups = apps.groupBy { asset ->
+                    val groupedApps = apps.groupBy { asset ->
                         asset.name.split("-universal")[0]
                             .split("-arm64")[0]
                             .split("-armeabi")[0]
-                            .split("-3-")[0] // hack for prime-video
-                            .replaceFirstChar { it.uppercase() }
-                            .replace("_", " ")
+                            .split("-3-")[0]
                             .replace(".apk", "")
-                    }.map { (name, variants) ->
-                        AppGroup(name, variants)
+                    }
+
+                    // Create groups with null metadata first to show UI immediately
+                    var currentGroups = groupedApps.map { (id, variants) ->
+                        val readableName = id.replaceFirstChar { it.uppercase() }.replace("_", " ")
+                        AppGroup(id, readableName, variants)
                     }.sortedBy { it.baseName }
 
-                    _uiState.value = MainScreenUiState.Success(groups)
+                    _uiState.value = MainScreenUiState.Success(currentGroups)
+
+                    // Fetch metadata in background
+                    val metadataDeferred = currentGroups.map { group ->
+                        async {
+                            val metadata = repository.getAppMetadata(group.originalId).getOrNull()
+                            group.copy(metadata = metadata)
+                        }
+                    }
+
+                    currentGroups = metadataDeferred.awaitAll()
+                    _uiState.value = MainScreenUiState.Success(currentGroups)
                 }
                 .onFailure { error ->
                     _uiState.value = MainScreenUiState.Error(error)

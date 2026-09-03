@@ -18,6 +18,8 @@ import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
@@ -136,7 +138,7 @@ fun MainScreen(
                                                         val sizeMb = "%.2f MB".format(asset.size / (1024.0 * 1024.0))
                                                         com.hotaro.duckystore.Variant(asset.name, sizeMb, asset.downloadUrl)
                                                     }
-                                                    onNavigateToDetail(com.hotaro.duckystore.AppDetail(group.baseName, variants))
+                                                    onNavigateToDetail(com.hotaro.duckystore.AppDetail(group.originalId, group.baseName, variants))
                                                 })
                                             }
                                         }
@@ -180,44 +182,69 @@ fun AppItem(group: AppGroup, onClick: () -> Unit) {
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
-        val readableName = group.baseName
+        val readableName = group.metadata?.name ?: group.baseName
         val firstLetter = readableName.firstOrNull()?.toString()?.uppercase() ?: "A"
 
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = firstLetter,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+            if (group.metadata?.icon?.isNotEmpty() == true) {
+                AsyncImage(
+                    model = group.metadata.icon,
+                    contentDescription = readableName,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentScale = ContentScale.Crop
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = firstLetter,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = readableName,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                val totalSizeMb = "%.2f".format(group.variants.sumOf { it.size } / (1024.0 * 1024.0))
-                val variantsCount = group.variants.size
-                Text(
-                    text = "$variantsCount variants",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (group.metadata?.category?.isNotEmpty() == true) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text(
+                            text = group.metadata.category,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                } else {
+                    val variantsCount = group.variants.size
+                    Text(
+                        text = "$variantsCount variants",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }

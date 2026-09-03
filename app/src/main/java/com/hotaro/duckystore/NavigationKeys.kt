@@ -14,6 +14,7 @@ data class Variant(
 )
 
 @Serializable data class AppDetail(
+    val originalId: String,
     val name: String,
     val variants: List<Variant>
 ) : NavKey

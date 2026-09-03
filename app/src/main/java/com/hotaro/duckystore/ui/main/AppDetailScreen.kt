@@ -16,6 +16,12 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.lazy.LazyRow
+import com.hotaro.duckystore.data.AppMetadata
+import com.hotaro.duckystore.data.AppRepository
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,6 +49,12 @@ fun AppDetailScreen(
     var downloadStatus by remember { mutableStateOf("Download") }
     var showVariantsSheet by remember { mutableStateOf(false) }
     var selectedVariant by remember { mutableStateOf(detail.variants.firstOrNull()) }
+    var metadata by remember { mutableStateOf<AppMetadata?>(null) }
+    
+    LaunchedEffect(detail.originalId) {
+        val repo = AppRepository()
+        metadata = repo.getAppMetadata(detail.originalId).getOrNull()
+    }
 
 
     Scaffold(

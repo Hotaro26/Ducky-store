@@ -19,17 +19,30 @@ class AppRepository {
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    private val retrofit = Retrofit.Builder()
+    private val githubRetrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com/")
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
-    private val service = retrofit.create(GithubService::class.java)
+    private val metadataRetrofit = Retrofit.Builder()
+        .baseUrl("https://raw.githubusercontent.com/Hotaro26/Ducky-store/main/")
+        .client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    private val githubService = githubRetrofit.create(GithubService::class.java)
+    private val metadataService = metadataRetrofit.create(MetadataService::class.java)
 
     suspend fun getApps(): Result<List<GithubAsset>> = runCatching {
-        val release = service.getLatestRelease()
+        val release = githubService.getLatestRelease()
         // Filter only APK assets
         release.assets.filter { it.name.endsWith(".apk") }
+    }
+
+    suspend fun getAppMetadata(appName: String): Result<AppMetadata?> = runCatching {
+        // Some app names have dashes or underscores. The files seem to be named exactly as the baseName.
+        val response = metadataService.getAppMetadata(appName)
+        response.firstOrNull()
     }
 }
