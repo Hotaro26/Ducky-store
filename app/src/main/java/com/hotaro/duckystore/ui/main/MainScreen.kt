@@ -6,6 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.util.lerp
+import kotlin.math.absoluteValue
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -141,19 +146,50 @@ fun MainScreen(
                                         ) {
                                             if (searchQuery.isBlank() && s.boxes.isNotEmpty()) {
                                                 item {
-                                                    androidx.compose.foundation.lazy.LazyRow(
-                                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                                        modifier = Modifier.fillMaxWidth()
-                                                    ) {
-                                                        items(s.boxes) { box ->
-                                                            Card(
-                                                                shape = RoundedCornerShape(16.dp),
-                                                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                                                                onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) }
-                                                            ) {
-                                                                Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
-                                                                    Text(box.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                                    val pagerState = rememberPagerState(pageCount = { s.boxes.size })
+                                                    HorizontalPager(
+                                                        state = pagerState,
+                                                        modifier = Modifier.fillMaxWidth().height(160.dp),
+                                                        contentPadding = PaddingValues(horizontal = 32.dp),
+                                                        pageSpacing = 16.dp
+                                                    ) { page ->
+                                                        val box = s.boxes[page]
+                                                        Card(
+                                                            shape = RoundedCornerShape(32.dp),
+                                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                                                            onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) },
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .graphicsLayer {
+                                                                    val pageOffset = (
+                                                                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                                                    ).absoluteValue
+                                                                    
+                                                                    val scale = lerp(
+                                                                        start = 0.85f,
+                                                                        stop = 1f,
+                                                                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                                                                    )
+                                                                    val alphaLerp = lerp(
+                                                                        start = 0.5f,
+                                                                        stop = 1f,
+                                                                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                                                                    )
+                                                                    scaleX = scale
+                                                                    scaleY = scale
+                                                                    alpha = alphaLerp
                                                                 }
+                                                        ) {
+                                                            Box(
+                                                                modifier = Modifier.fillMaxSize(),
+                                                                contentAlignment = Alignment.Center
+                                                            ) {
+                                                                Text(
+                                                                    text = box.title,
+                                                                    style = MaterialTheme.typography.headlineMedium,
+                                                                    fontWeight = FontWeight.Black,
+                                                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                                )
                                                             }
                                                         }
                                                     }
