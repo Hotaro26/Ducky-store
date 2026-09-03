@@ -70,6 +70,15 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
                     animationSpec = spring(stiffness = Spring.StiffnessMedium)
                 ) + fadeOut()
             },
+            predictivePopTransitionSpec = { _ ->
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                ) + fadeIn() togetherWith slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                ) + fadeOut()
+            },
             entryProvider = entryProvider {
                 entry<Main> {
                     MainScreen(
