@@ -21,11 +21,25 @@
       "https://via.placeholder.com/400x800"
     ],
     "modInfo": [
-      "Ad-Free viewing experience",
-      "Background playback enabled",
-      "SponsorBlock integration",
-      "Return YouTube Dislike",
-      "MicroG support for Google Login"
+      "Hide Ads: Removes home feed, search feed, and video player advertisements.",
+      "SponsorBlock: Integrates API to automatically skip sponsored segments, intros, outros, and subscription reminders.",
+      "Remove Background Playback Restrictions: Keeps audio running when the screen is locked or while switching apps.",
+      "Remove Viewer Discretion Dialog: Bypasses or auto-accepts age-restriction and warning popups.",
+      "Add to Queue: Replicates the Premium queuing feature, allowing dynamic video stacking.",
+      "Swipe Controls: Enables volume and brightness adjustments by swiping vertically on the player.",
+      "Alternative Thumbnails: Integrates DeArrow API to swap clickbait thumbnails for clean, representative stills.",
+      "Return YouTube Dislike: Restores the public dislike counter using community database extensions.",
+      "Custom Playback Speed: Adds granular speed modifiers (e.g., 0.25x intervals) to the standard selection panel.",
+      "External Downloads: Hooks download action items to external engines for offline local storage.",
+      "Hide Shorts Components: Completely hides the Shorts tab, navigation shelf, or associated feed widgets.",
+      "Theme Customization: Implements custom background colors, deep AMOLED blacks, and Material You dynamic color pallets.",
+      "Header & Branding Modifications: Standardizes options to modify the native application title text, banner asset, or app launcher icon.",
+      "Change Start Page: Directs default landing routes to custom endpoints such as Subscriptions or Library layouts.",
+      "Hide Flyout Menu Components: Trims non-essential options like \"Cast\", \"Report\", \"Remix\", or \"Clip\" from player menus.",
+      "GmsCore Support: Manages routing variables via MicroG/GmsCore for valid Google Account authorization on non-rooted configurations.",
+      "Sanitize Sharing Links: Scrubs query trackers, strings, and affiliate tags automatically prior to clipboard copy events.",
+      "Disable Video Codecs: Toggles specific codec layers (VP9, AV1, HDR profiles) to optimize efficiency or avoid hardware decoding failure.",
+      "Disable QUIC Protocol: Forces fallback standard TCP paths to remedy infinite buffering or stream stalling behaviors."
     ]
   }
 ]
