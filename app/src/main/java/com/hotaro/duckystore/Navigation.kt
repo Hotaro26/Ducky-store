@@ -16,7 +16,7 @@ import com.hotaro.duckystore.ui.main.MainScreen
 import com.hotaro.duckystore.ui.main.SettingsScreen
 
 @Composable
-fun MainNavigation() {
+fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
     val backStack = rememberNavBackStack(Main)
     val currentRoute = backStack.lastOrNull()
 
@@ -54,7 +54,7 @@ fun MainNavigation() {
                     )
                 }
                 entry<Settings> {
-                    SettingsScreen(modifier = Modifier.safeDrawingPadding())
+                    SettingsScreen(themeManager = themeManager, modifier = Modifier.safeDrawingPadding())
                 }
                 entry<AppDetail> { navKey ->
                     AppDetailScreen(
