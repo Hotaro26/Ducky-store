@@ -1,0 +1,24 @@
+[
+  {
+    "id": "prime-video-3-0-452-1047",
+    "name": "Prime-Video-3-0-452-1047",
+    "description": "Patched version of Prime-Video-3-0-452-1047 provided by Morphe-AutoBuilds.",
+    "icon": "https://via.placeholder.com/150",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/prime-video-3-0-452-1047.apk",
+    "repoUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "githubRepo": "RookieEnough/Morphe-AutoBuilds",
+    "releaseKeyword": "apk",
+    "packageName": "com.morphe.primevideo304521047",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "40.00 MB",
+    "author": "Morphe-AutoBuilds",
+    "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "screenshots": [
+      "https://via.placeholder.com/400x800",
+      "https://via.placeholder.com/400x800"
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "duolingo",
+    "name": "Duolingo",
+    "description": "Patched version of Duolingo provided by Morphe-AutoBuilds.",
+    "icon": "https://via.placeholder.com/150",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/duolingo-universal-morphe-patches-v6.92.5.apk",
+    "repoUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "githubRepo": "RookieEnough/Morphe-AutoBuilds",
+    "releaseKeyword": "apk",
+    "packageName": "com.morphe.duolingo",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "156.84 MB",
+    "author": "Morphe-AutoBuilds",
+    "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "screenshots": [
+      "https://via.placeholder.com/400x800",
+      "https://via.placeholder.com/400x800"
+    ]
+  }
+]

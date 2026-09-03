@@ -1,0 +1,24 @@
+[
+  {
+    "id": "wps-office",
+    "name": "Wps-Office",
+    "description": "Patched version of Wps-Office provided by Morphe-AutoBuilds.",
+    "icon": "https://via.placeholder.com/150",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/wps-office-universal-morphe-patches-v18.24.apk",
+    "repoUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "githubRepo": "RookieEnough/Morphe-AutoBuilds",
+    "releaseKeyword": "apk",
+    "packageName": "com.morphe.wpsoffice",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "174.61 MB",
+    "author": "Morphe-AutoBuilds",
+    "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "screenshots": [
+      "https://via.placeholder.com/400x800",
+      "https://via.placeholder.com/400x800"
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "google-photos",
+    "name": "Google-Photos",
+    "description": "Patched version of Google-Photos provided by Morphe-AutoBuilds.",
+    "icon": "https://via.placeholder.com/150",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/google-photos-armeabi-v7a-morphe-patches-v7.90.0.970693120.apk",
+    "repoUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "githubRepo": "RookieEnough/Morphe-AutoBuilds",
+    "releaseKeyword": "apk",
+    "packageName": "com.morphe.googlephotos",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "119.75 MB",
+    "author": "Morphe-AutoBuilds",
+    "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "screenshots": [
+      "https://via.placeholder.com/400x800",
+      "https://via.placeholder.com/400x800"
+    ]
+  }
+]

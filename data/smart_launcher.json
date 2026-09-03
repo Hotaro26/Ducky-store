@@ -1,0 +1,24 @@
+[
+  {
+    "id": "smart_launcher",
+    "name": "Smart Launcher",
+    "description": "Patched version of Smart Launcher provided by Morphe-AutoBuilds.",
+    "icon": "https://via.placeholder.com/150",
+    "version": "Latest",
+    "latestVersion": "Latest",
+    "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/smart_launcher-universal-morphe-patches-v6.6.build.016.apk",
+    "repoUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "githubRepo": "RookieEnough/Morphe-AutoBuilds",
+    "releaseKeyword": "apk",
+    "packageName": "com.morphe.smart_launcher",
+    "category": "Utility",
+    "platform": "Android",
+    "size": "20.77 MB",
+    "author": "Morphe-AutoBuilds",
+    "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
+    "screenshots": [
+      "https://via.placeholder.com/400x800",
+      "https://via.placeholder.com/400x800"
+    ]
+  }
+]
