@@ -3,7 +3,7 @@
     "id": "reddit",
     "name": "Reddit",
     "description": "Patched version of Reddit provided by Morphe-AutoBuilds.",
-    "icon": "https://via.placeholder.com/150",
+    "icon": "https://play-lh.googleusercontent.com/YlsjgA1pFEUqNaypaxE5ajushTBOt8IxVk_UEqzaXT7_n3JDgFq6KgtuE8tPBpvaCntB=w240-h480-rw",
     "version": "Latest",
     "latestVersion": "Latest",
     "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/reddit-universal-morphe-v2026.14.0.apk",
@@ -17,8 +17,12 @@
     "author": "Morphe-AutoBuilds",
     "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
     "screenshots": [
-      "https://via.placeholder.com/400x800",
-      "https://via.placeholder.com/400x800"
+      "https://play-lh.googleusercontent.com/L3ixXf1amXk-oi1ZFxPmO9q6coI13P9ubCpEvqsebDSVqeh6RLqAx2r8P1T3w-0Heoo=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/wuMIR55dBlldJj5uyVNkcW8yewBJ2upRkvPtNf_zs3HMaMpksblwWgUwVc0gXqw5koSz=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/4cFrpnZuzbdRXbHkni2WJ9AmrD_Ll2_Zlr7BfSPSZq7ZmGQvUdssyZhGGwyapb0NKQ=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/s64zT0EcpDZnHLj5oBc48vRJXwjwSWhhsXaigB1a8jRFAlZUQTvxfbacwrjt2pRUwkY=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/xVvEiWNXhOKz_uuPeGh_4zyNcZMaVAoEM3pNzcYSxwlH7xjRt2q980njoYvky1D8MPk=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/jv6fh9ia1OgnoFRvE7CfgkAkJ6uRXFZc8mWdPjPDGaBB4kBW_nN-oolRyrgXJ2e9Z7M=w526-h296-rw"
     ]
   }
 ]
