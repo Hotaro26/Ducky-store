@@ -7,6 +7,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -54,22 +56,34 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
             onBack = { backStack.removeLastOrNull() },
             modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
             transitionSpec = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
-                ) + fadeIn() togetherWith slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
-                ) + fadeOut()
+                if ((initialState == Main && targetState == Settings) || 
+                    (initialState == Settings && targetState == Main)) {
+                    scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
+                    scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
+                } else {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                    ) + fadeIn() togetherWith slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                    ) + fadeOut()
+                }
             },
             popTransitionSpec = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
-                ) + fadeIn() togetherWith slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
-                ) + fadeOut()
+                if ((initialState == Main && targetState == Settings) || 
+                    (initialState == Settings && targetState == Main)) {
+                    scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
+                    scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
+                } else {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                    ) + fadeIn() togetherWith slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                    ) + fadeOut()
+                }
             },
             predictivePopTransitionSpec = { _ ->
                 slideIntoContainer(
