@@ -90,7 +90,7 @@ fun AppDetailScreen(
     }
     
     LaunchedEffect(detail.originalId) {
-        val repo = AppRepository()
+        val repo = AppRepository(context)
         metadata = repo.getAppMetadata(detail.originalId).getOrNull()
     }
 

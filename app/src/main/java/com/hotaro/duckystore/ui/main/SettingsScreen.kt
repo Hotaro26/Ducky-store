@@ -1,5 +1,16 @@
 package com.hotaro.duckystore.ui.main
 
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Web
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.viewinterop.AndroidView
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.material.icons.filled.Lock
+
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -59,6 +70,7 @@ fun SettingsScreen(themeManager: com.hotaro.duckystore.theme.ThemeManager, modif
             "Developer" -> DeveloperScreen(onBack = { currentScreen = "Main" }, modifier = modifier)
             "Support" -> SupportScreen(onBack = { currentScreen = "Main" }, modifier = modifier)
             "Customisation" -> CustomisationScreen(themeManager = themeManager, onBack = { currentScreen = "Main" }, modifier = modifier)
+            "Authentication" -> AuthenticationScreen(onBack = { currentScreen = "Main" }, modifier = modifier)
         }
     }
 }
@@ -96,6 +108,21 @@ fun SettingsMainList(
                     iconColor = Color(0xFF6B4C8B),
                     title = "Customisation",
                     subtitle = "App Theme, Dark Mode"
+                )
+            }
+
+            SegmentCard(
+                onClick = { onNavigate("Authentication") },
+                defaultTopStart = 4.dp,
+                defaultTopEnd = 4.dp,
+                defaultBottomStart = 4.dp,
+                defaultBottomEnd = 4.dp
+            ) {
+                SettingsListItem(
+                    icon = Icons.Default.Lock,
+                    iconColor = Color(0xFFC0864B),
+                    title = "Authentication",
+                    subtitle = "GitHub API Token, Cookies"
                 )
             }
 
@@ -562,6 +589,103 @@ fun CustomisationScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+
+@Composable
+fun AuthenticationScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = context.getSharedPreferences("ducky_prefs", android.content.Context.MODE_PRIVATE)
+    
+    var token by remember { mutableStateOf(prefs.getString("github_token", "") ?: "") }
+    var cookies by remember { mutableStateOf(prefs.getString("github_cookies", "") ?: "") }
+    
+    var showWebView by remember { mutableStateOf(false) }
+
+    if (showWebView) {
+        Dialog(
+            onDismissRequest = { showWebView = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { showWebView = false }) { Icon(Icons.Default.Close, "Close") }
+                        Text("Login to GitHub", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                        Button(onClick = {
+                            val newCookies = CookieManager.getInstance().getCookie("https://github.com") ?: ""
+                            cookies = newCookies
+                            prefs.edit().putString("github_cookies", newCookies).apply()
+                            showWebView = false
+                            Toast.makeText(context, "Cookies extracted!", Toast.LENGTH_SHORT).show()
+                        }) {
+                            Text("Extract Cookies")
+                        }
+                    }
+                    AndroidView(
+                        factory = { ctx ->
+                            WebView(ctx).apply {
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                webChromeClient = WebChromeClient()
+                                webViewClient = WebViewClient()
+                                loadUrl("https://github.com/login")
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(top = 16.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, androidx.compose.foundation.shape.CircleShape)
+            ) { Icon(Icons.Default.ArrowBack, "Back") }
+            Spacer(Modifier.width(16.dp))
+            Text("Authentication", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        }
+        
+        Text("Bypass GitHub API limits and enable private repository downloads.", style = MaterialTheme.typography.bodyMedium)
+        
+        OutlinedTextField(
+            value = token,
+            onValueChange = { token = it; prefs.edit().putString("github_token", it).apply() },
+            label = { Text("GitHub API Token (PAT)") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        
+        OutlinedTextField(
+            value = cookies,
+            onValueChange = { cookies = it; prefs.edit().putString("github_cookies", it).apply() },
+            label = { Text("GitHub Cookies (For Downloads)") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        Button(
+            onClick = { showWebView = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
+        ) {
+            Icon(Icons.Default.Web, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Extract Cookies from WebView")
         }
     }
 }

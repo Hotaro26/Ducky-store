@@ -27,7 +27,7 @@ data class AppGroup(
 )
 
 class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = AppRepository()
+    private val repository = AppRepository(application)
 
     private val _uiState = MutableStateFlow<MainScreenUiState>(MainScreenUiState.Loading)
     val uiState: StateFlow<MainScreenUiState> = _uiState

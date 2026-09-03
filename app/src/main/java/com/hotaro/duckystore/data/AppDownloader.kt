@@ -19,6 +19,16 @@ class AppDownloader(private val context: Context) {
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
             .setMimeType("application/vnd.android.package-archive")
+            
+        val prefs = context.getSharedPreferences("ducky_prefs", Context.MODE_PRIVATE)
+        val token = prefs.getString("github_token", "")
+        val cookies = prefs.getString("github_cookies", "")
+        if (!token.isNullOrBlank()) {
+            request.addRequestHeader("Authorization", "Bearer $token")
+        }
+        if (!cookies.isNullOrBlank()) {
+            request.addRequestHeader("Cookie", cookies)
+        }
 
         return downloadManager.enqueue(request)
     }

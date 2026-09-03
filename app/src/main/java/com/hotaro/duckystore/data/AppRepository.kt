@@ -8,7 +8,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
-class AppRepository {
+import android.content.Context
+
+class AppRepository(private val context: Context) {
     private val json = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
@@ -16,6 +18,19 @@ class AppRepository {
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+        .addInterceptor { chain ->
+            val requestBuilder = chain.request().newBuilder()
+            val prefs = context.getSharedPreferences("ducky_prefs", Context.MODE_PRIVATE)
+            val token = prefs.getString("github_token", "")
+            val cookies = prefs.getString("github_cookies", "")
+            if (!token.isNullOrBlank()) {
+                requestBuilder.addHeader("Authorization", "Bearer $token")
+            }
+            if (!cookies.isNullOrBlank()) {
+                requestBuilder.addHeader("Cookie", cookies)
+            }
+            chain.proceed(requestBuilder.build())
+        }
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
 
