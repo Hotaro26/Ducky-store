@@ -1,14 +1,24 @@
 package com.hotaro.duckystore.ui.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hotaro.duckystore.AppDetail
 import com.hotaro.duckystore.data.AppDownloader
 import kotlinx.coroutines.launch
@@ -31,67 +41,225 @@ fun AppDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(detail.name) },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                actions = {
+                    IconButton(onClick = { /* TODO */ }) {
+                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+                    }
+                    IconButton(onClick = { /* TODO */ }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share")
+                    }
+                    IconButton(onClick = { /* TODO */ }) {
+                        Icon(Icons.Default.Flag, contentDescription = "Report")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
-        }
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                color = Color.Transparent
+            ) {
+                Column {
+                    progress?.let { p ->
+                        LinearProgressIndicator(
+                            progress = { p },
+                            modifier = Modifier.fillMaxWidth().height(4.dp).clip(CircleShape),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    Button(
+                        onClick = {
+                            if (downloadStatus == "Downloaded" && downloadId != null) {
+                                downloader.installApk(downloadId!!)
+                            } else if (downloadId == null || downloadStatus == "Download Failed") {
+                                val fileName = "${detail.name.replace(" ", "_")}.apk"
+                                downloadId = downloader.downloadApk(detail.downloadUrl, fileName)
+                                downloadStatus = "Downloading..."
+                                
+                                coroutineScope.launch {
+                                    downloader.getDownloadProgressFlow(downloadId!!).collect { downloadProgress ->
+                                        progress = downloadProgress.progressPercent / 100f
+                                        if (downloadProgress.status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
+                                            downloadStatus = "Downloaded"
+                                            progress = 1f
+                                            downloader.installApk(downloadId!!)
+                                        } else if (downloadProgress.status == android.app.DownloadManager.STATUS_FAILED) {
+                                            downloadStatus = "Download Failed"
+                                            progress = null
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = downloadStatus == "Download" || downloadStatus == "Download Failed" || downloadStatus == "Downloaded"
+                    ) {
+                        if (downloadStatus == "Download" || downloadStatus == "Download Failed") {
+                            Icon(Icons.Default.Download, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = if (downloadStatus == "Downloaded") "Install" else downloadStatus,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = modifier
                 .padding(padding)
-                .padding(16.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text(text = detail.name, style = MaterialTheme.typography.headlineLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Size: ${detail.size}", style = MaterialTheme.typography.bodyLarge)
-            
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = {
-                    if (downloadStatus == "Downloaded" && downloadId != null) {
-                        downloader.installApk(downloadId!!)
-                    } else if (downloadId == null) {
-                        val fileName = "${detail.name.replace(" ", "_")}.apk"
-                        downloadId = downloader.downloadApk(detail.downloadUrl, fileName)
-                        downloadStatus = "Downloading..."
-                        
-                        coroutineScope.launch {
-                            downloader.getDownloadProgressFlow(downloadId!!).collect { downloadProgress ->
-                                progress = downloadProgress.progressPercent / 100f
-                                if (downloadProgress.status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
-                                    downloadStatus = "Downloaded"
-                                    progress = 1f
-                                    downloader.installApk(downloadId!!)
-                                } else if (downloadProgress.status == android.app.DownloadManager.STATUS_FAILED) {
-                                    downloadStatus = "Download Failed"
-                                    progress = null
-                                }
-                            }
-                        }
-                    }
-                },
-                enabled = downloadStatus == "Download" || downloadStatus == "Download Failed" || downloadStatus == "Downloaded"
+            // Header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (downloadStatus == "Downloaded") "Install" else downloadStatus)
+                // App Icon (First Word)
+                val firstWord = detail.name.split(" ").firstOrNull() ?: "App"
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = firstWord,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        maxLines = 1
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(20.dp))
+                
+                // Title and Author
+                Column {
+                    Text(
+                        text = detail.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Hotaro26",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Verified",
+                            tint = Color(0xFF4CAF50),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            progress?.let { p ->
-                LinearProgressIndicator(
-                    progress = { p },
+            
+            // Tags
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                ) {
+                    Text("PRODUCTIVITY", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                ) {
+                    Text("VIRUSTOTAL SCAN", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            
+            // Info Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Default.Android, contentDescription = null, tint = Color(0xFF4CAF50))
+                        Text("ANDROID", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("1.5", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        Text("VERSION", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(detail.size, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        Text("SIZE", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            
+            // Repository Button
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                onClick = { /* TODO */ }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Code, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Show Repository", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+            
+            // Previews
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("Preview", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("${(p * 100).toInt()}%")
+                ) {
+                    repeat(3) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(0.45f)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                        )
+                    }
+                }
             }
+            
+            // Bottom padding for the FAB
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
