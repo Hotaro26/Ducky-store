@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+@kotlinx.serialization.Serializable
 data class AppGroup(
     val originalId: String,
     val baseName: String,
