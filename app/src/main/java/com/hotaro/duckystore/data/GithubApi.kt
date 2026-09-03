@@ -52,5 +52,8 @@ interface GithubService {
 
 interface MetadataService {
     @GET("data/{appName}.json")
-    suspend fun getAppMetadata(@Path("appName") appName: String): List<AppMetadata>
+    suspend fun getAppMetadata(
+        @Path("appName") appName: String,
+        @retrofit2.http.Query("t") timestamp: Long = System.currentTimeMillis()
+    ): List<AppMetadata>
 }

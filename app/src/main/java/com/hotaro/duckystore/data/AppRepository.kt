@@ -48,5 +48,5 @@ class AppRepository {
     suspend fun getAppMetadata(appName: String): Result<AppMetadata?> = runCatching {
         val response = metadataService.getAppMetadata(appName)
         response.firstOrNull()
-    }
+    }.onFailure { android.util.Log.e("AppRepository", "Error fetching metadata", it) }
 }
