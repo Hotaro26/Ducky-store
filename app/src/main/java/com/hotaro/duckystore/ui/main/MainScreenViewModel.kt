@@ -30,7 +30,10 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val repository = AppRepository()
 
     private val _uiState = MutableStateFlow<MainScreenUiState>(MainScreenUiState.Loading)
-    val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<MainScreenUiState> = _uiState
+
+    private val _isRateLimited = MutableStateFlow(false)
+    val isRateLimited: StateFlow<Boolean> = _isRateLimited.asStateFlow()
 
     init {
         loadApps()
@@ -71,10 +74,13 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             
             // If network failed (e.g., rate limit) and we have cache, just gracefully stop and let them use the cache
             if (jsonList.isEmpty()) {
+                _isRateLimited.value = true
                 if (fullCacheJson == null) {
                     _uiState.value = MainScreenUiState.Error(Exception("No apps found or GitHub rate limit exceeded. Please try again later."))
                 }
                 return@launch
+            } else {
+                _isRateLimited.value = false
             }
 
             // Group release variants by inferred baseName

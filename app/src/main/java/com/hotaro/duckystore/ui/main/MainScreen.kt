@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hotaro.duckystore.R
@@ -71,6 +72,8 @@ fun MainScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var sortMode by remember { mutableStateOf(SortMode.RECOMMENDED) }
     var showSortSheet by remember { mutableStateOf(false) }
+    var showRateLimitSheet by remember { mutableStateOf(false) }
+    val isRateLimited by viewModel.isRateLimited.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -95,6 +98,23 @@ fun MainScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text("Ducky Store", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            
+                            if (isRateLimited) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = MaterialTheme.colorScheme.errorContainer,
+                                    onClick = { showRateLimitSheet = true }
+                                ) {
+                                    Text(
+                                        "RATE LIMITED",
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                }
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -251,6 +271,40 @@ fun MainScreen(
                 }
             }
         } // End of Scaffold content
+    }
+
+    if (showRateLimitSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showRateLimitSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp).padding(bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text("GitHub API Limit Reached", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("You have exceeded GitHub's unauthenticated limit of 60 requests per hour. The app is currently showing cached offline data.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("How to fix this:", fontWeight = FontWeight.Bold)
+                Text("• Wait a few minutes for your IP limit to reset.")
+                Text("• Connect to a VPN to change your IP address.")
+                Text("• Clear the app cache below (Warning: if you clear cache while rate-limited, you won't see any apps!).")
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                        context.getSharedPreferences("ducky_metadata_cache", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+                        showRateLimitSheet = false
+                        viewModel.loadApps()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Clear Cache & Retry")
+                }
+            }
+        }
     }
 
     if (showSortSheet) {
