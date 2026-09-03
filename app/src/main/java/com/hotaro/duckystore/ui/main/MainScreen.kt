@@ -28,6 +28,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material3.*
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
+
+
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -178,39 +182,19 @@ fun MainScreen(
                                         ) {
                                             if (searchQuery.isBlank() && s.boxes.isNotEmpty()) {
                                                 item {
-                                                    val pagerState = rememberPagerState(pageCount = { s.boxes.size })
-                                                    HorizontalPager(
-                                                        state = pagerState,
+                                                    val carouselState = rememberCarouselState(itemCount = { s.boxes.size })
+                                                    HorizontalMultiBrowseCarousel(
+                                                        state = carouselState,
+                                                        preferredItemWidth = 260.dp,
                                                         modifier = Modifier.fillMaxWidth().height(160.dp),
-                                                        contentPadding = PaddingValues(horizontal = 32.dp),
-                                                        pageSpacing = 16.dp
+                                                        itemSpacing = 12.dp
                                                     ) { page ->
                                                         val box = s.boxes[page]
                                                         Card(
                                                             shape = RoundedCornerShape(32.dp),
                                                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
                                                             onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) },
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .graphicsLayer {
-                                                                    val pageOffset = (
-                                                                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                                                    ).absoluteValue
-                                                                    
-                                                                    val scale = lerp(
-                                                                        start = 0.85f,
-                                                                        stop = 1f,
-                                                                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                                                    )
-                                                                    val alphaLerp = lerp(
-                                                                        start = 0.5f,
-                                                                        stop = 1f,
-                                                                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                                                    )
-                                                                    scaleX = scale
-                                                                    scaleY = scale
-                                                                    alpha = alphaLerp
-                                                                }
+                                                            modifier = Modifier.fillMaxSize()
                                                         ) {
                                                             Box(
                                                                 modifier = Modifier.fillMaxSize(),
