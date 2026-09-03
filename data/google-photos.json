@@ -3,7 +3,7 @@
     "id": "google-photos",
     "name": "Google-Photos",
     "description": "Patched version of Google-Photos provided by Morphe-AutoBuilds.",
-    "icon": "https://via.placeholder.com/150",
+    "icon": "https://play-lh.googleusercontent.com/y1yV7oGqfPvaEiA2-wGxj54g6pznm_dkWOISrn_ZuamPO-EsSwJpePLX1eHkDpEyrhk=w240-h480-rw",
     "version": "Latest",
     "latestVersion": "Latest",
     "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/google-photos-armeabi-v7a-morphe-patches-v7.90.0.970693120.apk",
@@ -17,8 +17,13 @@
     "author": "Morphe-AutoBuilds",
     "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
     "screenshots": [
-      "https://via.placeholder.com/400x800",
-      "https://via.placeholder.com/400x800"
+      "https://play-lh.googleusercontent.com/ekxDu_i5U913rIbg5RoK6gDgV7zcqp6ekr1XUtl42qJi3NqEZEoy_HEWS_KYZAwGYg=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/ma7gQaW2kRc-g1OSuCslsN_y55sjyYeGIBsZzECne4n2y0nnwT6EcS499jx8EXQxHw=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/0BHOTyPpxkDeRqcVvX7jC4n19IrZEuoQ8g6ZpKeZAGiTwqxrYks0LBeMHJhlycHnUg=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/Q_-4hENqbPuc2M_GHZMdKCmM8HkwM4hmXLFWrHvjM4L5bR4mv_nUW4nX1Na_ygNLBio=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/r29nPV-QPT0t2L7_zFZpk5fiGpdpF0EstG9AIBdX2G7W7v65H5Pigdqomr0emfL30w=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/QifMTbHSLjToNPe6Nh6Mm9_A4jLot0zZNyQYqJySroZpquGHLoEzAG3sdQWiRcawkw=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/dWwu1cVz9RSfppekFlc9fPN3AxHijzPOy6jUTGhWOvdnZaCSIXFGHSGckc3Coqn-lg=w526-h296-rw"
     ]
   }
 ]
