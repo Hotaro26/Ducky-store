@@ -139,6 +139,27 @@ fun MainScreen(
                                             contentPadding = PaddingValues(16.dp),
                                             verticalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
+                                            if (searchQuery.isBlank() && s.boxes.isNotEmpty()) {
+                                                item {
+                                                    androidx.compose.foundation.lazy.LazyRow(
+                                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    ) {
+                                                        items(s.boxes) { box ->
+                                                            Card(
+                                                                shape = RoundedCornerShape(16.dp),
+                                                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                                                                onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) }
+                                                            ) {
+                                                                Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+                                                                    Text(box.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
                                             items(filteredGroups) { group ->
                                                 AppItem(group = group, onClick = {
                                                     val variants = group.variants.map { asset ->
