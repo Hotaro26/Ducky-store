@@ -1,6 +1,11 @@
 package com.hotaro.duckystore.ui.main
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
 import androidx.lifecycle.viewModelScope
 import com.hotaro.duckystore.data.AppMetadata
 import com.hotaro.duckystore.data.AppRepository
@@ -20,7 +25,7 @@ data class AppGroup(
     val metadata: AppMetadata? = null
 )
 
-class MainScreenViewModel : ViewModel() {
+class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AppRepository()
 
     private val _uiState = MutableStateFlow<MainScreenUiState>(MainScreenUiState.Loading)
@@ -67,11 +72,40 @@ class MainScreenViewModel : ViewModel() {
                 AppGroup(jsonId, readableName, variants)
             }.sortedBy { it.baseName }
             
-            // Fetch metadata in background BEFORE emitting success
+            val prefs = getApplication<Application>().getSharedPreferences("ducky_metadata_cache", Context.MODE_PRIVATE)
+            val jsonParser = Json { ignoreUnknownKeys = true }
+            
+            // First pass: Load from Cache instantly
+            var cachedGroups = currentGroups.map { group ->
+                val cachedJson = prefs.getString(group.originalId, null)
+                val metadata = if (cachedJson != null) {
+                    try { jsonParser.decodeFromString<AppMetadata>(cachedJson) } catch (e: Exception) { null }
+                } else null
+                
+                val finalVariants = if (group.variants.isEmpty() && metadata != null && metadata.downloadUrl.isNotEmpty()) {
+                    val sizeValue = metadata.size.replace(" MB", "").toDoubleOrNull() ?: 0.0
+                    val sizeBytes = (sizeValue * 1024 * 1024).toLong()
+                    listOf(GithubAsset(name = "${metadata.name}.apk", size = sizeBytes, downloadUrl = metadata.downloadUrl))
+                } else group.variants
+                
+                group.copy(metadata = metadata, variants = finalVariants)
+            }
+            
+            // Load cached Box Data
+            val cachedBoxesJson = prefs.getString("boxes_cache", null)
+            val cachedBoxes = if (cachedBoxesJson != null) {
+                try { jsonParser.decodeFromString<List<BoxData>>(cachedBoxesJson) } catch (e: Exception) { emptyList() }
+            } else emptyList()
+            
+            _uiState.value = MainScreenUiState.Success(cachedGroups, cachedBoxes)
+
+            // Fetch metadata in background for fresh updates
             val metadataDeferred = currentGroups.map { group ->
                 async {
                     val metadata = repository.getAppMetadata(group.originalId).getOrNull()
-                    // If no variants were found in Morphe, use the JSON's fallback downloadUrl
+                    if (metadata != null) {
+                        prefs.edit().putString(group.originalId, jsonParser.encodeToString(metadata)).apply()
+                    }
                     val finalVariants = if (group.variants.isEmpty() && metadata != null && metadata.downloadUrl.isNotEmpty()) {
                         val sizeValue = metadata.size.replace(" MB", "").toDoubleOrNull() ?: 0.0
                         val sizeBytes = (sizeValue * 1024 * 1024).toLong()
@@ -94,6 +128,7 @@ class MainScreenViewModel : ViewModel() {
                 }
             }
             val loadedBoxes = boxDataDeferred.awaitAll().filter { it.appIds.isNotEmpty() }
+            prefs.edit().putString("boxes_cache", jsonParser.encodeToString(loadedBoxes)).apply()
             
             _uiState.value = MainScreenUiState.Success(fullyLoadedGroups, loadedBoxes)
         }
