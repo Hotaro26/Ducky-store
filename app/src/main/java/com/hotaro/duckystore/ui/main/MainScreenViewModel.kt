@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hotaro.duckystore.data.AppMetadata
 import com.hotaro.duckystore.data.AppRepository
 import com.hotaro.duckystore.data.GithubAsset
+import com.hotaro.duckystore.data.BoxData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,9 +37,11 @@ class MainScreenViewModel : ViewModel() {
             // Fetch list of JSONs in data folder and the Github release concurrently
             val jsonListDeferred = async { repository.getDataFolderContents().getOrDefault(emptyList()) }
             val releaseAppsDeferred = async { repository.getApps().getOrDefault(emptyList()) }
+            val boxesListDeferred = async { repository.getBoxesFolderContents().getOrDefault(emptyList()) }
             
             val jsonList = jsonListDeferred.await()
             val releaseApps = releaseAppsDeferred.await()
+            val boxesList = boxesListDeferred.await()
             
             if (jsonList.isEmpty()) {
                 _uiState.value = MainScreenUiState.Error(Exception("No apps found in data folder"))
@@ -81,7 +84,18 @@ class MainScreenViewModel : ViewModel() {
             }
 
             val fullyLoadedGroups = metadataDeferred.awaitAll()
-            _uiState.value = MainScreenUiState.Success(fullyLoadedGroups)
+            
+            // Load Box Data
+            val boxDataDeferred = boxesList.map { boxId ->
+                async {
+                    val appIds = repository.getBoxMetadata(boxId).getOrNull() ?: emptyList()
+                    val title = boxId.replace("_", " ").replaceFirstChar { it.uppercase() }
+                    BoxData(boxId, title, appIds)
+                }
+            }
+            val loadedBoxes = boxDataDeferred.awaitAll().filter { it.appIds.isNotEmpty() }
+            
+            _uiState.value = MainScreenUiState.Success(fullyLoadedGroups, loadedBoxes)
         }
     }
 }
@@ -89,5 +103,5 @@ class MainScreenViewModel : ViewModel() {
 sealed interface MainScreenUiState {
     data object Loading : MainScreenUiState
     data class Error(val throwable: Throwable) : MainScreenUiState
-    data class Success(val data: List<AppGroup>) : MainScreenUiState
+    data class Success(val data: List<AppGroup>, val boxes: List<BoxData> = emptyList()) : MainScreenUiState
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,6 +41,7 @@ import com.hotaro.duckystore.data.GithubAsset
 @Composable
 fun MainScreen(
     onNavigateToDetail: (com.hotaro.duckystore.AppDetail) -> Unit,
+    onNavigateToBox: (com.hotaro.duckystore.BoxDetail) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: MainScreenViewModel = viewModel()
 ) {

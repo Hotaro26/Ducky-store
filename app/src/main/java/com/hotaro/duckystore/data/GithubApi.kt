@@ -45,12 +45,22 @@ data class AppMetadata(
     val screenshots: List<String> = emptyList()
 )
 
+@Serializable
+data class BoxData(
+    val id: String,
+    val title: String,
+    val appIds: List<String>
+)
+
 interface GithubService {
     @GET("repos/RookieEnough/Morphe-AutoBuilds/releases/latest")
     suspend fun getLatestRelease(): GithubRelease
 
     @GET("repos/Hotaro26/Ducky-store/contents/data")
     suspend fun getDataContents(): List<GithubContent>
+
+    @GET("repos/Hotaro26/Ducky-store/contents/boxes")
+    suspend fun getBoxesContents(): List<GithubContent>
 }
 
 interface MetadataService {
@@ -59,4 +69,10 @@ interface MetadataService {
         @Path("appName") appName: String,
         @retrofit2.http.Query("t") timestamp: Long = System.currentTimeMillis()
     ): List<AppMetadata>
+
+    @GET("boxes/{boxName}.json")
+    suspend fun getBoxMetadata(
+        @Path("boxName") boxName: String,
+        @retrofit2.http.Query("t") timestamp: Long = System.currentTimeMillis()
+    ): List<String>
 }

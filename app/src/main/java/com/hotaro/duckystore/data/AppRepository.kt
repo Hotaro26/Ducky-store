@@ -40,6 +40,15 @@ class AppRepository {
         release.assets.filter { it.name.endsWith(".apk") }
     }
 
+    suspend fun getBoxesFolderContents(): Result<List<String>> = runCatching {
+        val contents = githubService.getBoxesContents()
+        contents.filter { it.name.endsWith(".json") }.map { it.name.replace(".json", "") }
+    }
+
+    suspend fun getBoxMetadata(boxName: String): Result<List<String>> = runCatching {
+        metadataService.getBoxMetadata(boxName)
+    }.onFailure { android.util.Log.e("AppRepository", "Error fetching box metadata", it) }
+
     suspend fun getDataFolderContents(): Result<List<String>> = runCatching {
         val contents = githubService.getDataContents()
         contents.filter { it.name.endsWith(".json") }.map { it.name.replace(".json", "") }

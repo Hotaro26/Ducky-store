@@ -13,6 +13,11 @@ data class Variant(
     val downloadUrl: String
 )
 
+@Serializable data class BoxDetail(
+    val title: String,
+    val appIds: List<String>
+) : NavKey
+
 @Serializable data class AppDetail(
     val originalId: String,
     val name: String,

@@ -20,6 +20,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.hotaro.duckystore.ui.main.AppDetailScreen
+import com.hotaro.duckystore.ui.main.BoxDetailScreen
 import com.hotaro.duckystore.ui.main.MainScreen
 import com.hotaro.duckystore.ui.main.SettingsScreen
 
@@ -85,11 +86,23 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
                         onNavigateToDetail = { appDetail ->
                             backStack.add(appDetail)
                         },
+                        onNavigateToBox = { boxDetail ->
+                            backStack.add(boxDetail)
+                        },
                         modifier = Modifier
                     )
                 }
                 entry<Settings> {
                     SettingsScreen(themeManager = themeManager, modifier = Modifier)
+                }
+                entry<BoxDetail> { navKey ->
+                    BoxDetailScreen(
+                        detail = navKey,
+                        onBack = { backStack.removeLastOrNull() },
+                        onNavigateToDetail = { appDetail ->
+                            backStack.add(appDetail)
+                        }
+                    )
                 }
                 entry<AppDetail> { navKey ->
                     AppDetailScreen(
