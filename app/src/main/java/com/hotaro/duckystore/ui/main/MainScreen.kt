@@ -71,6 +71,14 @@ fun MainScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showSortSheet = true },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Icon(Icons.Default.Sort, contentDescription = "Sort Apps")
+                }
+            },
             topBar = {
                 TopAppBar(
                     title = {
