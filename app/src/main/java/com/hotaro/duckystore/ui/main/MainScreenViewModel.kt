@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+data class AppGroup(
+    val baseName: String,
+    val variants: List<GithubAsset>
+)
+
 class MainScreenViewModel : ViewModel() {
     private val repository = AppRepository()
 
@@ -24,7 +29,19 @@ class MainScreenViewModel : ViewModel() {
             _uiState.value = MainScreenUiState.Loading
             repository.getApps()
                 .onSuccess { apps ->
-                    _uiState.value = MainScreenUiState.Success(apps)
+                    val groups = apps.groupBy { asset ->
+                        asset.name.split("-universal")[0]
+                            .split("-arm64")[0]
+                            .split("-armeabi")[0]
+                            .split("-3-")[0] // hack for prime-video
+                            .replaceFirstChar { it.uppercase() }
+                            .replace("_", " ")
+                            .replace(".apk", "")
+                    }.map { (name, variants) ->
+                        AppGroup(name, variants)
+                    }.sortedBy { it.baseName }
+
+                    _uiState.value = MainScreenUiState.Success(groups)
                 }
                 .onFailure { error ->
                     _uiState.value = MainScreenUiState.Error(error)
@@ -36,5 +53,5 @@ class MainScreenViewModel : ViewModel() {
 sealed interface MainScreenUiState {
     data object Loading : MainScreenUiState
     data class Error(val throwable: Throwable) : MainScreenUiState
-    data class Success(val data: List<GithubAsset>) : MainScreenUiState
+    data class Success(val data: List<AppGroup>) : MainScreenUiState
 }

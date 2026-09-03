@@ -48,8 +48,8 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
             entryProvider = entryProvider {
                 entry<Main> {
                     MainScreen(
-                        onNavigateToDetail = { appName, size, url ->
-                            backStack.add(AppDetail(appName, size, url))
+                        onNavigateToDetail = { appDetail ->
+                            backStack.add(appDetail)
                         },
                         modifier = Modifier
                     )

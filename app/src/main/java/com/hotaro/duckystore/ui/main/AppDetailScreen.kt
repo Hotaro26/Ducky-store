@@ -2,6 +2,8 @@ package com.hotaro.duckystore.ui.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +41,9 @@ fun AppDetailScreen(
     var downloadId by remember { mutableStateOf<Long?>(null) }
     var progress by remember { mutableStateOf<Float?>(null) }
     var downloadStatus by remember { mutableStateOf("Download") }
+    var showVariantsSheet by remember { mutableStateOf(false) }
+    var selectedVariant by remember { mutableStateOf(detail.variants.firstOrNull()) }
+
 
     Scaffold(
         topBar = {
@@ -81,20 +88,27 @@ fun AppDetailScreen(
                             if (downloadStatus == "Downloaded" && downloadId != null) {
                                 downloader.installApk(downloadId!!)
                             } else if (downloadId == null || downloadStatus == "Download Failed") {
-                                val fileName = "${detail.name.replace(" ", "_")}.apk"
-                                downloadId = downloader.downloadApk(detail.downloadUrl, fileName)
-                                downloadStatus = "Downloading..."
-                                
-                                coroutineScope.launch {
-                                    downloader.getDownloadProgressFlow(downloadId!!).collect { downloadProgress ->
-                                        progress = downloadProgress.progressPercent / 100f
-                                        if (downloadProgress.status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
-                                            downloadStatus = "Downloaded"
-                                            progress = 1f
-                                            downloader.installApk(downloadId!!)
-                                        } else if (downloadProgress.status == android.app.DownloadManager.STATUS_FAILED) {
-                                            downloadStatus = "Download Failed"
-                                            progress = null
+                                if (detail.variants.size > 1) {
+                                    showVariantsSheet = true
+                                } else {
+                                    selectedVariant = detail.variants.firstOrNull()
+                                    selectedVariant?.let { variant ->
+                                        val fileName = "${detail.name.replace(" ", "_")}.apk"
+                                        downloadId = downloader.downloadApk(variant.downloadUrl, fileName)
+                                        downloadStatus = "Downloading..."
+                                        
+                                        coroutineScope.launch {
+                                            downloader.getDownloadProgressFlow(downloadId!!).collect { downloadProgress ->
+                                                progress = downloadProgress.progressPercent / 100f
+                                                if (downloadProgress.status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
+                                                    downloadStatus = "Downloaded"
+                                                    progress = 1f
+                                                    downloader.installApk(downloadId!!)
+                                                } else if (downloadProgress.status == android.app.DownloadManager.STATUS_FAILED) {
+                                                    downloadStatus = "Download Failed"
+                                                    progress = null
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -187,12 +201,7 @@ fun AppDetailScreen(
                 ) {
                     Text("PRODUCTIVITY", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                ) {
-                    Text("VIRUSTOTAL SCAN", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                }
+
             }
             
             // Info Card
@@ -211,11 +220,15 @@ fun AppDetailScreen(
                         Text("ANDROID", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("1.5", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        val firstVariantName = detail.variants.firstOrNull()?.name ?: ""
+                        val versionMatch = Regex("-v([\\d\\.]+)").find(firstVariantName)
+                        val versionStr = versionMatch?.groupValues?.get(1) ?: "1.0"
+                        Text(versionStr, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Text("VERSION", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(detail.size, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        val displaySize = selectedVariant?.size ?: detail.variants.firstOrNull()?.size ?: "0 MB"
+                        Text(displaySize, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Text("SIZE", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -260,6 +273,56 @@ fun AppDetailScreen(
             
             // Bottom padding for the FAB
             Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+
+    if (showVariantsSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showVariantsSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text("Select Variant to Download", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(detail.variants) { variant ->
+                        Card(
+                            onClick = {
+                                selectedVariant = variant
+                                showVariantsSheet = false
+                                val fileName = "${variant.name.replace(" ", "_")}.apk"
+                                downloadId = downloader.downloadApk(variant.downloadUrl, fileName)
+                                downloadStatus = "Downloading..."
+                                coroutineScope.launch {
+                                    downloader.getDownloadProgressFlow(downloadId!!).collect { downloadProgress ->
+                                        progress = downloadProgress.progressPercent / 100f
+                                        if (downloadProgress.status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
+                                            downloadStatus = "Downloaded"
+                                            progress = 1f
+                                            downloader.installApk(downloadId!!)
+                                        } else if (downloadProgress.status == android.app.DownloadManager.STATUS_FAILED) {
+                                            downloadStatus = "Download Failed"
+                                            progress = null
+                                        }
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(variant.name, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("Size: ${variant.size}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }

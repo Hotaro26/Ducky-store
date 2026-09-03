@@ -32,7 +32,7 @@ import com.hotaro.duckystore.data.GithubAsset
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onNavigateToDetail: (String, String, String) -> Unit,
+    onNavigateToDetail: (com.hotaro.duckystore.AppDetail) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainScreenViewModel = viewModel()
 ) {
@@ -113,13 +113,13 @@ fun MainScreen(
                                     // Handled by PullToRefreshBox indicator, but we can keep a placeholder if empty
                                 }
                                 is MainScreenUiState.Success -> {
-                                    val filteredApps = if (searchQuery.isNotBlank()) {
-                                        s.data.filter { it.name.contains(searchQuery, ignoreCase = true) }
+                                    val filteredGroups = if (searchQuery.isNotBlank()) {
+                                        s.data.filter { it.baseName.contains(searchQuery, ignoreCase = true) }
                                     } else {
                                         s.data
                                     }
 
-                                    if (filteredApps.isEmpty()) {
+                                    if (filteredGroups.isEmpty()) {
                                         Text(
                                             "No apps found.", 
                                             modifier = Modifier.align(Alignment.Center)
@@ -130,11 +130,13 @@ fun MainScreen(
                                             contentPadding = PaddingValues(16.dp),
                                             verticalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
-                                            items(filteredApps) { asset ->
-                                                AppItem(asset = asset, onClick = {
-                                                    val sizeMb = "%.2f MB".format(asset.size / (1024.0 * 1024.0))
-                                                    val readableName = asset.name.replace(".apk", "").split("-universal")[0].replaceFirstChar { it.uppercase() }.replace("_", " ")
-                                                    onNavigateToDetail(readableName, sizeMb, asset.downloadUrl)
+                                            items(filteredGroups) { group ->
+                                                AppItem(group = group, onClick = {
+                                                    val variants = group.variants.map { asset ->
+                                                        val sizeMb = "%.2f MB".format(asset.size / (1024.0 * 1024.0))
+                                                        com.hotaro.duckystore.Variant(asset.name, sizeMb, asset.downloadUrl)
+                                                    }
+                                                    onNavigateToDetail(com.hotaro.duckystore.AppDetail(group.baseName, variants))
                                                 })
                                             }
                                         }
@@ -170,7 +172,7 @@ fun MainScreen(
 }
 
 @Composable
-fun AppItem(asset: GithubAsset, onClick: () -> Unit) {
+fun AppItem(group: AppGroup, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
@@ -178,12 +180,7 @@ fun AppItem(asset: GithubAsset, onClick: () -> Unit) {
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
-        val readableName = asset.name
-            .replace(".apk", "")
-            .split("-universal")[0]
-            .replaceFirstChar { it.uppercase() }
-            .replace("_", " ")
-            
+        val readableName = group.baseName
         val firstLetter = readableName.firstOrNull()?.toString()?.uppercase() ?: "A"
 
         Row(
@@ -214,9 +211,10 @@ fun AppItem(asset: GithubAsset, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                val sizeMb = "%.2f".format(asset.size / (1024.0 * 1024.0))
+                val totalSizeMb = "%.2f".format(group.variants.sumOf { it.size } / (1024.0 * 1024.0))
+                val variantsCount = group.variants.size
                 Text(
-                    text = "Size: $sizeMb MB",
+                    text = "$variantsCount variants",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
