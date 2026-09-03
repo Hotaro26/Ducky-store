@@ -39,6 +39,9 @@ data class AppMetadata(
     val author: String = "",
     val downloadUrl: String = "",
     val size: String = "0 MB",
+    val packageName: String = "",
+    val version: String = "",
+    val latestVersion: String = "",
     val screenshots: List<String> = emptyList()
 )
 

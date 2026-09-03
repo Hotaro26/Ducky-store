@@ -20,6 +20,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import com.hotaro.duckystore.utils.PackageUtils
+import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
@@ -175,6 +180,25 @@ fun MainScreen(
 
 @Composable
 fun AppItem(group: AppGroup, onClick: () -> Unit) {
+    val context = LocalContext.current
+    var isInstalled by remember { mutableStateOf(false) }
+    var installedVersion by remember { mutableStateOf<String?>(null) }
+    var remoteVersion by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(group.metadata?.packageName, group.variants) {
+        group.metadata?.packageName?.let {
+            isInstalled = PackageUtils.isPackageInstalled(context, it)
+            if (isInstalled) {
+                installedVersion = PackageUtils.getInstalledVersion(context, it)
+                val firstVariantName = group.variants.firstOrNull()?.name ?: ""
+                val versionMatch = Regex("-v([\\d\\.]+)").find(firstVariantName)
+                remoteVersion = versionMatch?.groupValues?.get(1) ?: group.metadata.version.takeIf { it.isNotBlank() && it != "Latest" }
+            }
+        }
+    }
+
+    val hasUpdate = isInstalled && installedVersion != null && remoteVersion != null && installedVersion != remoteVersion
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
@@ -225,25 +249,57 @@ fun AppItem(group: AppGroup, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                if (group.metadata?.category?.isNotEmpty() == true) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    if (hasUpdate) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.errorContainer
+                        ) {
+                            Text(
+                                text = "UPDATE",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    if (group.metadata?.category?.isNotEmpty() == true) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        ) {
+                            Text(
+                                text = group.metadata.category,
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                    } else {
+                        val variantsCount = group.variants.size
                         Text(
-                            text = group.metadata.category,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            text = "$variantsCount variants",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } else {
-                    val variantsCount = group.variants.size
-                    Text(
-                        text = "$variantsCount variants",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                }
+            }
+            
+            if (isInstalled && !hasUpdate) {
+                androidx.compose.material3.IconButton(
+                    onClick = { group.metadata?.packageName?.let { PackageUtils.openApp(context, it) } },
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(12.dp))
+                ) {
+                    Icon(Icons.Default.OpenInNew, contentDescription = "Open", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                }
+            } else if (hasUpdate) {
+                androidx.compose.material3.IconButton(
+                    onClick = onClick,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                ) {
+                    Icon(Icons.Default.Update, contentDescription = "Update", tint = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }

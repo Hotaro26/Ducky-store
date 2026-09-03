@@ -31,6 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hotaro.duckystore.AppDetail
 import com.hotaro.duckystore.data.AppDownloader
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.runtime.DisposableEffect
+import com.hotaro.duckystore.utils.PackageUtils
+import androidx.compose.material.icons.filled.Delete
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,6 +55,38 @@ fun AppDetailScreen(
     var showVariantsSheet by remember { mutableStateOf(false) }
     var selectedVariant by remember { mutableStateOf(detail.variants.firstOrNull()) }
     var metadata by remember { mutableStateOf<AppMetadata?>(null) }
+    
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isInstalled by remember { mutableStateOf(false) }
+    
+    DisposableEffect(lifecycleOwner, metadata?.packageName) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                metadata?.packageName?.let {
+                    isInstalled = PackageUtils.isPackageInstalled(context, it)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        
+        metadata?.packageName?.let {
+            isInstalled = PackageUtils.isPackageInstalled(context, it)
+        }
+        
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(isInstalled) {
+        if (isInstalled && downloadId != null) {
+            kotlinx.coroutines.delay(10000)
+            val downloadManager = context.getSystemService(android.content.Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
+            downloadManager.remove(downloadId!!)
+            downloadId = null
+            downloadStatus = "Download" // Reset for future updates
+        }
+    }
     
     LaunchedEffect(detail.originalId) {
         val repo = AppRepository()
