@@ -194,7 +194,7 @@ fun MainScreen(
                                                             shape = RoundedCornerShape(32.dp),
                                                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
                                                             onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) },
-                                                            modifier = Modifier.fillMaxSize()
+                                                            modifier = Modifier.fillMaxSize().maskClip(RoundedCornerShape(32.dp))
                                                         ) {
                                                             Box(
                                                                 modifier = Modifier.fillMaxSize(),
