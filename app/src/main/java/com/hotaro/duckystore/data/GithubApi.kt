@@ -16,10 +16,17 @@ data class GithubRelease(
 
 @Serializable
 data class GithubAsset(
-    @SerialName("id") val id: Long,
+    @SerialName("id") val id: Long = 0,
     @SerialName("name") val name: String,
     @SerialName("size") val size: Long,
     @SerialName("browser_download_url") val downloadUrl: String
+)
+
+@Serializable
+data class GithubContent(
+    @SerialName("name") val name: String,
+    @SerialName("path") val path: String,
+    @SerialName("download_url") val downloadUrl: String?
 )
 
 @Serializable
@@ -30,12 +37,17 @@ data class AppMetadata(
     val icon: String = "",
     val category: String = "Utility",
     val author: String = "",
+    val downloadUrl: String = "",
+    val size: String = "0 MB",
     val screenshots: List<String> = emptyList()
 )
 
 interface GithubService {
     @GET("repos/RookieEnough/Morphe-AutoBuilds/releases/latest")
     suspend fun getLatestRelease(): GithubRelease
+
+    @GET("repos/Hotaro26/Ducky-store/contents/data")
+    suspend fun getDataContents(): List<GithubContent>
 }
 
 interface MetadataService {

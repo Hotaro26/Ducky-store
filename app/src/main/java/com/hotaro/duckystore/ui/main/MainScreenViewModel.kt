@@ -32,38 +32,58 @@ class MainScreenViewModel : ViewModel() {
     fun loadApps() {
         viewModelScope.launch {
             _uiState.value = MainScreenUiState.Loading
-            repository.getApps()
-                .onSuccess { apps ->
-                    val groupedApps = apps.groupBy { asset ->
-                        asset.name.split("-universal")[0]
-                            .split("-arm64")[0]
-                            .split("-armeabi")[0]
-                            .split("-3-")[0]
-                            .replace(".apk", "")
+            
+            // Fetch list of JSONs in data folder and the Github release concurrently
+            val jsonListDeferred = async { repository.getDataFolderContents().getOrDefault(emptyList()) }
+            val releaseAppsDeferred = async { repository.getApps().getOrDefault(emptyList()) }
+            
+            val jsonList = jsonListDeferred.await()
+            val releaseApps = releaseAppsDeferred.await()
+            
+            if (jsonList.isEmpty()) {
+                _uiState.value = MainScreenUiState.Error(Exception("No apps found in data folder"))
+                return@launch
+            }
+
+            // Group release variants by inferred baseName
+            val releaseGroups = releaseApps.groupBy { asset ->
+                asset.name.split("-universal")[0]
+                    .split("-arm64")[0]
+                    .split("-armeabi")[0]
+                    .split("-3-")[0]
+                    .replace(".apk", "")
+            }
+
+            // Create initial groups based on the JSON files
+            var currentGroups = jsonList.map { jsonId ->
+                val readableName = jsonId.replaceFirstChar { it.uppercase() }.replace("_", " ")
+                
+                // Try to find matching variants from Morphe-AutoBuilds
+                val variants = releaseGroups[jsonId] ?: releaseGroups[readableName.lowercase()] ?: emptyList()
+                
+                AppGroup(jsonId, readableName, variants)
+            }.sortedBy { it.baseName }
+            
+            _uiState.value = MainScreenUiState.Success(currentGroups)
+
+            // Fetch metadata in background
+            val metadataDeferred = currentGroups.map { group ->
+                async {
+                    val metadata = repository.getAppMetadata(group.originalId).getOrNull()
+                    // If no variants were found in Morphe, use the JSON's fallback downloadUrl
+                    val finalVariants = if (group.variants.isEmpty() && metadata != null && metadata.downloadUrl.isNotEmpty()) {
+                        val sizeValue = metadata.size.replace(" MB", "").toDoubleOrNull() ?: 0.0
+                        val sizeBytes = (sizeValue * 1024 * 1024).toLong()
+                        listOf(GithubAsset(name = "${metadata.name}.apk", size = sizeBytes, downloadUrl = metadata.downloadUrl))
+                    } else {
+                        group.variants
                     }
-
-                    // Create groups with null metadata first to show UI immediately
-                    var currentGroups = groupedApps.map { (id, variants) ->
-                        val readableName = id.replaceFirstChar { it.uppercase() }.replace("_", " ")
-                        AppGroup(id, readableName, variants)
-                    }.sortedBy { it.baseName }
-
-                    _uiState.value = MainScreenUiState.Success(currentGroups)
-
-                    // Fetch metadata in background
-                    val metadataDeferred = currentGroups.map { group ->
-                        async {
-                            val metadata = repository.getAppMetadata(group.originalId).getOrNull()
-                            group.copy(metadata = metadata)
-                        }
-                    }
-
-                    currentGroups = metadataDeferred.awaitAll()
-                    _uiState.value = MainScreenUiState.Success(currentGroups)
+                    group.copy(metadata = metadata, variants = finalVariants)
                 }
-                .onFailure { error ->
-                    _uiState.value = MainScreenUiState.Error(error)
-                }
+            }
+
+            currentGroups = metadataDeferred.awaitAll()
+            _uiState.value = MainScreenUiState.Success(currentGroups)
         }
     }
 }

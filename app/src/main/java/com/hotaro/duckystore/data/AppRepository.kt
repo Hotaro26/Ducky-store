@@ -40,8 +40,12 @@ class AppRepository {
         release.assets.filter { it.name.endsWith(".apk") }
     }
 
+    suspend fun getDataFolderContents(): Result<List<String>> = runCatching {
+        val contents = githubService.getDataContents()
+        contents.filter { it.name.endsWith(".json") }.map { it.name.replace(".json", "") }
+    }
+
     suspend fun getAppMetadata(appName: String): Result<AppMetadata?> = runCatching {
-        // Some app names have dashes or underscores. The files seem to be named exactly as the baseName.
         val response = metadataService.getAppMetadata(appName)
         response.firstOrNull()
     }
