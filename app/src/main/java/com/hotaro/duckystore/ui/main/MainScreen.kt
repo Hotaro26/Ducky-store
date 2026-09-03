@@ -156,7 +156,7 @@ fun MainScreen(
                                                         val box = s.boxes[page]
                                                         Card(
                                                             shape = RoundedCornerShape(32.dp),
-                                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
                                                             onClick = { onNavigateToBox(com.hotaro.duckystore.BoxDetail(box.title, box.appIds)) },
                                                             modifier = Modifier
                                                                 .fillMaxSize()
@@ -184,11 +184,12 @@ fun MainScreen(
                                                                 modifier = Modifier.fillMaxSize(),
                                                                 contentAlignment = Alignment.Center
                                                             ) {
+                                                                PlayfulScatteredIcons(seed = box.title)
                                                                 Text(
                                                                     text = box.title,
                                                                     style = MaterialTheme.typography.headlineMedium,
                                                                     fontWeight = FontWeight.Black,
-                                                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                                                 )
                                                             }
                                                         }
