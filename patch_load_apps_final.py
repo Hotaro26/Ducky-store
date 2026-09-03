@@ -1,42 +1,9 @@
-package com.hotaro.duckystore.ui.main
+import re
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import android.content.Context
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+with open("app/src/main/java/com/hotaro/duckystore/ui/main/MainScreenViewModel.kt", "r") as f:
+    content = f.read()
 
-import androidx.lifecycle.viewModelScope
-import com.hotaro.duckystore.data.AppMetadata
-import com.hotaro.duckystore.data.AppRepository
-import com.hotaro.duckystore.data.GithubAsset
-import com.hotaro.duckystore.data.BoxData
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-
-@kotlinx.serialization.Serializable
-data class AppGroup(
-    val originalId: String,
-    val baseName: String,
-    val variants: List<GithubAsset>,
-    val metadata: AppMetadata? = null
-)
-
-class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = AppRepository()
-
-    private val _uiState = MutableStateFlow<MainScreenUiState>(MainScreenUiState.Loading)
-    val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
-
-    init {
-        loadApps()
-    }
-
-    fun loadApps() {
+new_load = """    fun loadApps() {
         viewModelScope.launch {
             val prefs = getApplication<Application>().getSharedPreferences("ducky_metadata_cache", Context.MODE_PRIVATE)
             val jsonParser = Json { ignoreUnknownKeys = true }
@@ -128,11 +95,11 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             
             _uiState.value = MainScreenUiState.Success(fullyLoadedGroups, loadedBoxes)
         }
-    }
-}
+    }"""
 
-sealed interface MainScreenUiState {
-    data object Loading : MainScreenUiState
-    data class Error(val throwable: Throwable) : MainScreenUiState
-    data class Success(val data: List<AppGroup>, val boxes: List<BoxData> = emptyList()) : MainScreenUiState
-}
+# Use regex to replace the whole fun loadApps() { ... } block
+content = re.sub(r'    fun loadApps\(\) \{.*?(?=\n\}\n)', new_load, content, flags=re.DOTALL)
+
+with open("app/src/main/java/com/hotaro/duckystore/ui/main/MainScreenViewModel.kt", "w") as f:
+    f.write(content)
+
