@@ -159,7 +159,7 @@ fun MainScreen(
                                     
                                     val filteredGroups = remember(baseFiltered, sortMode) {
                                         when (sortMode) {
-                                            SortMode.RECOMMENDED -> baseFiltered.sortedWith(compareByDescending<com.hotaro.duckystore.ui.main.AppGroup> { it.metadata?.icon?.isNotEmpty() == true }.thenByDescending { it.variants.size })
+                                            SortMode.RECOMMENDED -> baseFiltered.sortedWith(compareByDescending<com.hotaro.duckystore.ui.main.AppGroup> { it.metadata?.icon?.isNotEmpty() == true }.thenByDescending { (it.metadata?.screenshots?.size ?: 0) + it.variants.size })
                                             SortMode.ALPHABETICAL -> baseFiltered.sortedBy { it.metadata?.name?.lowercase() ?: it.baseName.lowercase() }
                                             SortMode.POPULAR -> baseFiltered.sortedByDescending { (it.metadata?.screenshots?.size ?: 0) + it.variants.size }
                                         }
