@@ -1,8 +1,11 @@
 package com.hotaro.duckystore.ui.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +20,7 @@ import com.hotaro.duckystore.data.GithubAsset
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+    onNavigateToDetail: (String, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainScreenViewModel = viewModel()
 ) {
@@ -25,10 +29,10 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ducky Store \uD83E\uDD86") },
+                title = { Text("Ducky Store") },
                 actions = {
-                    TextButton(onClick = { viewModel.loadApps() }) {
-                        Text("Refresh")
+                    IconButton(onClick = { viewModel.loadApps() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
                 }
             )
@@ -48,7 +52,11 @@ fun MainScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(s.data) { asset ->
-                                AppItem(asset)
+                                AppItem(asset = asset, onClick = {
+                                    val sizeMb = "%.2f MB".format(asset.size / (1024.0 * 1024.0))
+                                    val readableName = asset.name.replace(".apk", "").split("-universal")[0].replaceFirstChar { it.uppercase() }.replace("_", " ")
+                                    onNavigateToDetail(readableName, sizeMb, asset.downloadUrl)
+                                })
                             }
                         }
                     }
@@ -79,16 +87,14 @@ fun MainScreen(
 }
 
 @Composable
-fun AppItem(asset: GithubAsset) {
+fun AppItem(asset: GithubAsset, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Simplify name: remove "-universal-morphe-patches-v..." or similar if needed.
-            // For now just display the raw name nicely.
             val readableName = asset.name
                 .replace(".apk", "")
                 .split("-universal")[0]
@@ -107,13 +113,6 @@ fun AppItem(asset: GithubAsset) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = { /* TODO: Download implementation */ },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("Download")
-            }
         }
     }
 }
