@@ -3,7 +3,7 @@
     "id": "youtube",
     "name": "Youtube",
     "description": "Patched version of Youtube provided by Morphe-AutoBuilds.",
-    "icon": "https://via.placeholder.com/150",
+    "icon": "https://i.ibb.co/R1Hx72Y/youtube-icon.jpg",
     "version": "Latest",
     "latestVersion": "Latest",
     "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/youtube-universal-morphe-v21.07.247.apk",
@@ -22,3 +22,5 @@
     ]
   }
 ]
+
+
