@@ -56,8 +56,13 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
             onBack = { backStack.removeLastOrNull() },
             modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
             transitionSpec = {
-                if ((initialState == Main && targetState == Settings) || 
-                    (initialState == Settings && targetState == Main)) {
+                val initialKey = initialState.toString()
+                val targetKey = targetState.toString()
+                val isBetweenHomeAndSettings = 
+                    (initialKey.contains("key=Main,") && targetKey.contains("key=Settings,")) ||
+                    (initialKey.contains("key=Settings,") && targetKey.contains("key=Main,"))
+                    
+                if (isBetweenHomeAndSettings) {
                     scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
                     scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
                 } else {
@@ -71,8 +76,13 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
                 }
             },
             popTransitionSpec = {
-                if ((initialState == Main && targetState == Settings) || 
-                    (initialState == Settings && targetState == Main)) {
+                val initialKey = initialState.toString()
+                val targetKey = targetState.toString()
+                val isBetweenHomeAndSettings = 
+                    (initialKey.contains("key=Main,") && targetKey.contains("key=Settings,")) ||
+                    (initialKey.contains("key=Settings,") && targetKey.contains("key=Main,"))
+                    
+                if (isBetweenHomeAndSettings) {
                     scaleIn(initialScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeIn() togetherWith 
                     scaleOut(targetScale = 0.9f, animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
                 } else {
