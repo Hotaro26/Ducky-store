@@ -3,7 +3,7 @@
     "id": "duolingo",
     "name": "Duolingo",
     "description": "Patched version of Duolingo provided by Morphe-AutoBuilds.",
-    "icon": "https://via.placeholder.com/150",
+    "icon": "https://play-lh.googleusercontent.com/oM9XsLvTLj2B8LBLYNiNglE5n3VRwln9bfH9_2VklMn_oI4f3CAp97cBt-zubmSr4BNV-paWPWzOlU-3tzQHwg=w240-h480-rw",
     "version": "Latest",
     "latestVersion": "Latest",
     "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/duolingo-universal-morphe-patches-v6.92.5.apk",
@@ -17,8 +17,13 @@
     "author": "Morphe-AutoBuilds",
     "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
     "screenshots": [
-      "https://via.placeholder.com/400x800",
-      "https://via.placeholder.com/400x800"
+      "https://play-lh.googleusercontent.com/TBNhsI8TfMIQdAkrSZEpI52hc5vHbrXXaXUIuC9TgdZppaAplw8427ERXa2pH2qjXts=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/Ygq8bGPafUfPqBRvM-H673Mk4hP-Ivivznr3WlSySHTMpGS8AkQD7M4nrNOxnvyw9A=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/RKYNoLMstVxw96n1c8mE9qAT84ukN9mX_21MHDcwa6_HXBKkwNDftvy3SHyMTWSebZo=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/JBWfveQvVFmBRWT1qBDV6BRvDbG2zLxdB5T4gL0sni2_1TWekQ4NwuniQPMM7DjXVyY6=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/zzRyLHT41KZ2fjqeRmcGpsDyo1CTBNtRNkmxxXBRrYz9rhX2i5Ts60wGJJp4K0UGXIY=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/AEg6G7lKLGwsm5ZR_xiWXiHkSMgifl8whiqSbEdN7UdznJVevrnl5GY3kXBPW7SAAQ=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/fdqMzLNN8KbPJQjBllBdca2Q8gqfHwu5N5QYMnHmgVcaH38PgQMFgXwpJA1ezv7UWaCp=w526-h296-rw"
     ]
   }
 ]
