@@ -55,7 +55,7 @@ class MainScreenViewModel : ViewModel() {
             }
 
             // Create initial groups based on the JSON files
-            var currentGroups = jsonList.map { jsonId ->
+            val currentGroups = jsonList.map { jsonId ->
                 val readableName = jsonId.replaceFirstChar { it.uppercase() }.replace("_", " ")
                 
                 // Try to find matching variants from Morphe-AutoBuilds
@@ -64,9 +64,7 @@ class MainScreenViewModel : ViewModel() {
                 AppGroup(jsonId, readableName, variants)
             }.sortedBy { it.baseName }
             
-            _uiState.value = MainScreenUiState.Success(currentGroups)
-
-            // Fetch metadata in background
+            // Fetch metadata in background BEFORE emitting success
             val metadataDeferred = currentGroups.map { group ->
                 async {
                     val metadata = repository.getAppMetadata(group.originalId).getOrNull()
@@ -82,8 +80,8 @@ class MainScreenViewModel : ViewModel() {
                 }
             }
 
-            currentGroups = metadataDeferred.awaitAll()
-            _uiState.value = MainScreenUiState.Success(currentGroups)
+            val fullyLoadedGroups = metadataDeferred.awaitAll()
+            _uiState.value = MainScreenUiState.Success(fullyLoadedGroups)
         }
     }
 }

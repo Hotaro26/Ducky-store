@@ -263,36 +263,7 @@ fun AppDetailScreen(
                 )
             }
             
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Preview", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                if (metadata?.screenshots?.isNotEmpty() == true) {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(metadata!!.screenshots) { screenshot ->
-                            AsyncImage(
-                                model = screenshot,
-                                contentDescription = "Screenshot",
-                                modifier = Modifier.height(300.dp).clip(RoundedCornerShape(16.dp)),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        repeat(3) {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(0.45f)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                            )
-                        }
-                    }
-                }
-            }
+
             
             // Tags
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -350,6 +321,37 @@ fun AppDetailScreen(
                     Icon(Icons.Default.Code, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Show Repository", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("Preview", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                if (metadata?.screenshots?.isNotEmpty() == true) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        items(metadata!!.screenshots) { screenshot ->
+                            AsyncImage(
+                                model = screenshot,
+                                contentDescription = "Screenshot",
+                                modifier = Modifier.height(300.dp).clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+                } else {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(0.45f)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                            )
+                        }
+                    }
                 }
             }
             
