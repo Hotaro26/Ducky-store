@@ -3,7 +3,7 @@
     "id": "crunchyroll",
     "name": "Crunchyroll",
     "description": "Patched version of Crunchyroll provided by Morphe-AutoBuilds.",
-    "icon": "https://via.placeholder.com/150",
+    "icon": "https://play-lh.googleusercontent.com/Fnor8mzNEsiWTfSTI_RXUmsaZW0eYw0RkIgIhSCphG4Y0ZgwC-zK2qzik-9VIxQDWQ=s48-rw",
     "version": "Latest",
     "latestVersion": "Latest",
     "downloadUrl": "https://github.com/RookieEnough/Morphe-AutoBuilds/releases/download/latest/crunchyroll-universal-morphe-patches-v2.6.0.apk",
@@ -17,8 +17,12 @@
     "author": "Morphe-AutoBuilds",
     "officialSite": "https://github.com/RookieEnough/Morphe-AutoBuilds",
     "screenshots": [
-      "https://via.placeholder.com/400x800",
-      "https://via.placeholder.com/400x800"
+       "https://play-lh.googleusercontent.com/mc85mHwZt5indv2qNq5IJwv-D34WOlvljyfdbjGvIyurwYssXxyI2B9IXuINnQDTKNETU6MsyhoZs8lV9nUsZg=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/jzOWAnp9G3r1NpHHkAcWiGIXT5c74o7ZezQ6u2bEb3xde4DhJab97L1o37LZbny_m3BPsQ2-5FW-JRFYqKaY=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/iw_2fAYDhCVRL40CyU3K02JV1QsSFEwf5RmuVX14kfamKxBZ4iuUYj5qwDWL4NndKMh7l34s6QXIOLDml5lO=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/Ew40HvHQaFQF6_hmA0wi9NofNWXTGXK2_koX2LtoaxYmOQ0AEGyMhOaEFmkoqLyxivWIsz5n4La6cE767OanT7o=w526-h296-rw",
+      "https://play-lh.googleusercontent.com/0G1H3owL7Zwpgx4RQnf9akjYfUfcI2f3CZYD45q8gaz9b_S2tGpw43gCNtHmG4ymIRnmGRMRj7nl40jUuAhoPA=w526-h296-rw"
+
     ]
   }
 ]
