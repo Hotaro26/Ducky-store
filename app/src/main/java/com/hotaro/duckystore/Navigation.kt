@@ -1,6 +1,7 @@
 package com.hotaro.duckystore
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -43,24 +44,24 @@ fun MainNavigation(themeManager: com.hotaro.duckystore.theme.ThemeManager) {
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
             entryProvider = entryProvider {
                 entry<Main> {
                     MainScreen(
                         onNavigateToDetail = { appName, size, url ->
                             backStack.add(AppDetail(appName, size, url))
                         },
-                        modifier = Modifier.safeDrawingPadding()
+                        modifier = Modifier
                     )
                 }
                 entry<Settings> {
-                    SettingsScreen(themeManager = themeManager, modifier = Modifier.safeDrawingPadding())
+                    SettingsScreen(themeManager = themeManager, modifier = Modifier)
                 }
                 entry<AppDetail> { navKey ->
                     AppDetailScreen(
                         detail = navKey,
                         onBack = { backStack.removeLastOrNull() },
-                        modifier = Modifier.safeDrawingPadding()
+                        modifier = Modifier
                     )
                 }
             }
