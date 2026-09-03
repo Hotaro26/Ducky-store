@@ -1,10 +1,7 @@
-{
-  "title": "Editor's Pick",
-  "appIds": [
-    "gabi",
-    "mascot",
-    "miko",
-    "quranreader",
-    "fookus-tube"
-  ]
-}
+[
+  "gabi",
+  "mascot",
+  "miko",
+  "quranreader",
+  "fookus-tube"
+]
