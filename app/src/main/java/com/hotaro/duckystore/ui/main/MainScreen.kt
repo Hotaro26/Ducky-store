@@ -18,6 +18,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material3.*
@@ -42,6 +49,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hotaro.duckystore.R
 import com.hotaro.duckystore.data.GithubAsset
 
+
+enum class SortMode(val title: String) {
+    RECOMMENDED("Recommended"),
+    ALPHABETICAL("Alphabetical"),
+    POPULAR("Popular")
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -51,6 +65,8 @@ fun MainScreen(
     viewModel: MainScreenViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var sortMode by remember { mutableStateOf(SortMode.RECOMMENDED) }
+    var showSortSheet by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -127,10 +143,18 @@ fun MainScreen(
                                     // Handled by PullToRefreshBox indicator, but we can keep a placeholder if empty
                                 }
                                 is MainScreenUiState.Success -> {
-                                    val filteredGroups = if (searchQuery.isNotBlank()) {
+                                    val baseFiltered = if (searchQuery.isNotBlank()) {
                                         s.data.filter { it.baseName.contains(searchQuery, ignoreCase = true) }
                                     } else {
                                         s.data
+                                    }
+                                    
+                                    val filteredGroups = remember(baseFiltered, sortMode) {
+                                        when (sortMode) {
+                                            SortMode.RECOMMENDED -> baseFiltered.sortedWith(compareByDescending<com.hotaro.duckystore.ui.main.AppGroup> { it.metadata?.icon?.isNotEmpty() == true }.thenByDescending { it.variants.size })
+                                            SortMode.ALPHABETICAL -> baseFiltered.sortedBy { it.metadata?.name?.lowercase() ?: it.baseName.lowercase() }
+                                            SortMode.POPULAR -> baseFiltered.sortedByDescending { (it.metadata?.screenshots?.size ?: 0) + it.variants.size }
+                                        }
                                     }
 
                                     if (filteredGroups.isEmpty()) {
@@ -231,6 +255,52 @@ fun MainScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+        } // End of Scaffold content
+    }
+
+    if (showSortSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSortSheet = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(bottom = 32.dp)
+                    .selectableGroup()
+            ) {
+                Text(
+                    text = "Sort Apps By",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp, start = 8.dp)
+                )
+                SortMode.entries.forEach { mode ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .selectable(
+                                selected = (mode == sortMode),
+                                onClick = {
+                                    sortMode = mode
+                                    showSortSheet = false
+                                },
+                                role = Role.RadioButton
+                            )
+                            .padding(horizontal = 8.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (mode == sortMode),
+                            onClick = null 
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(text = mode.title, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
